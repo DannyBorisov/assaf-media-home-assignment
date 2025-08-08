@@ -17,7 +17,7 @@ function App() {
 
   const { handleLogin, isLoading, handleOTPVerification } = useLogin();
 
-  function onClick() {
+  function handleSubmit() {
     if (currentStep === Steps.Login) {
       handleLogin(username, honeyPot)
         .then(() => setCurrentStep(Steps.OTP))
@@ -28,17 +28,13 @@ function App() {
           }, 1000);
         });
     } else {
-      handleOTPVerification(username, honeyPot);
-    }
-  }
-
-  function handleSubmit() {
-    if (currentStep === Steps.OTP) {
-      handleOTPVerification(username, userOTP).then((token) =>
-        localStorage.setItem(TokenName, token)
-      );
-    } else {
-      handleLogin(username).then(() => setCurrentStep(Steps.OTP));
+      handleOTPVerification(username, honeyPot)
+        .then((token) => {
+          localStorage.setItem(TokenName, token);
+        })
+        .then(() => {
+          window.location.href = "http://localhost:8080";
+        });
     }
   }
 
@@ -98,7 +94,6 @@ function App() {
           />
 
           <LoginButton
-            onClick={onClick}
             isLoading={isLoading}
             text={currentStep === Steps.Login ? "Login" : "Submit"}
           />
@@ -112,15 +107,10 @@ export default App;
 
 interface LoginButtonProps {
   isLoading: boolean;
-  onClick: () => void;
   text: string;
 }
 
-const LoginButton: React.FC<LoginButtonProps> = ({
-  isLoading,
-  onClick,
-  text,
-}) => {
+const LoginButton: React.FC<LoginButtonProps> = ({ isLoading, text }) => {
   function renderText() {
     if (isLoading) {
       return (
@@ -138,7 +128,6 @@ const LoginButton: React.FC<LoginButtonProps> = ({
       type="submit"
       className={`${styles.btn} ${isLoading ? styles.btnLoading : ""}`}
       disabled={isLoading}
-      onClick={onClick}
     >
       {renderText()}
     </button>
