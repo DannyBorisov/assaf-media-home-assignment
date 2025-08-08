@@ -1,6 +1,6 @@
 ## Working time:
 
-React login page and auth.php (brevo etc) -  1h
+React login page and auth.php (brevo etc) -  1h__
 Image upload mechanism - 1.5h
 Cleaning up and figuring out the code 0.5h
 0.5h - settings up local SQL and PHP (which worked partially but not smooth)
