@@ -1,0 +1,10 @@
+[08-Aug-2025 18:59:00 Asia/Jerusalem] 2025-08-08 18:59:00It seems that MYSQL server details, user, password is not set
+[08-Aug-2025 18:59:00 Asia/Jerusalem] [INCLUDE FAILED] [3876239876478392764328765832546] Message: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, bool given | File: /var/www/html/modules/mysql.php | Line: 208 | Module: mysql | Trace: #0 /var/www/html/modules/mysql.php(208): mysqli_query(false, 'SELECT NOW();')
+#1 /var/www/html/modules/mysql.php(297): mysql_query('SELECT NOW();', false)
+#2 /var/www/html/modules/mysql.php(374): mysql_fetch_array('SELECT NOW();')
+#3 /var/www/html/app_init.php(58): require_once('/var/www/html/m...')
+#4 /var/www/html/app_init.php(133): include_module('mysql')
+#5 /var/www/html/config.php(86): include_all_modules()
+#6 /var/www/html/auth.php(5): require_once('/var/www/html/c...')
+#7 {main}
+[08-Aug-2025 18:59:00 Asia/Jerusalem] LOGIN ERROR: No username provided
