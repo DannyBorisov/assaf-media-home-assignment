@@ -84,10 +84,10 @@
 				<label class="image-upload-label" for="image-upload">
 					<i class="fa-sharp fa-solid fa-paperclip"></i>
 				</label>
-				<input type="file" name="" id="image-upload" />
+				<input type="file" name="image_upload" id="image-upload" tabindex="-1" />
 				<div class="message-input-container">
 					<input id="msg" type="text" placeholder="Type a message" required />
-					<label class="image-upload-drop" for="image-upload">gsda</label>
+					<label class="image-upload-drop" for="image-upload"></label>
 				</div>
 				<button class="submit_msg">
 					<i class="fa-solid fa-paper-plane"></i>

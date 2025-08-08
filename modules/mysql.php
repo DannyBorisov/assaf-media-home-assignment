@@ -21,8 +21,10 @@
 				$mysql_password = constant("MYSQL_DEFAULT_DB_PASSWORD") ?? null;
 			}
 			
-			if(!$mysql_servername || !$mysql_username || !$mysql_db_name || !$mysql_password){
-				error_log(date("Y-m-d H:i:s")."It seems that MYSQL server details, user, password is not set");
+			error_log("DEBUG MySQL Connect: Server=$mysql_servername, User=$mysql_username, DB=$mysql_db_name, Pass=".($mysql_password ? 'SET' : 'EMPTY'));
+			
+			if(!$mysql_servername || !$mysql_username || !$mysql_db_name){
+				error_log(date("Y-m-d H:i:s")."It seems that MYSQL server details, user, database name is not set");
 				return false;
 			}
 			
@@ -279,7 +281,6 @@
 
 	if(!(function_exists("mysql_fetch_array"))){
 		function mysql_fetch_array($query_or_result, $params = [], $result_type = MYSQLI_BOTH, $conn = false){
-			
 			if (!$conn) {
 				$conn = get_mysqli_connection();
 			}

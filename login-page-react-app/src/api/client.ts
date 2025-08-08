@@ -1,5 +1,3 @@
-// current php API router based on path param
-
 export const TokenName = "Nothing-to-see-here";
 
 class ApiClient {
@@ -7,7 +5,6 @@ class ApiClient {
   #defaultEndpoint = "/auth.php";
   #defaultHeaders = {
     "Content-Type": "application/json",
-    Authorization: `${localStorage.get(TokenName)}`,
   };
 
   constructor() {}

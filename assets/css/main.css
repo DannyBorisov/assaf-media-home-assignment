@@ -101,8 +101,8 @@ audio {
   padding: 0;
 }
 
-.contact_more_options {
-}
+/* .contact_more_options {
+} */
 
 .contact_more_options ul,
 .contact_more_options ul li {
@@ -134,7 +134,7 @@ audio {
 }
 
 .nav-icons li {
-  backgroud-color: pink;
+  background-color: pink;
   list-style: none;
   display: flex;
   cursor: pointer;
@@ -570,8 +570,8 @@ video {
   display: none;
 }
 
-#pick_a_datetime_scheduled_msg {
-}
+/* #pick_a_datetime_scheduled_msg {
+} */
 
 .load_more_chats {
   text-align: center;
@@ -671,4 +671,78 @@ video {
   margin-left: 19px;
   height: 100%;
   border-radius: 1rem;
+  pointer-events: none; /* Allow clicks to pass through to text input */
+}
+
+.message-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.message-input-container.drag-over {
+  background-color: rgba(37, 211, 102, 0.1);
+  border: 2px dashed #25d366 !important;
+  border-radius: 1rem;
+}
+
+/* Image preview styles */
+.image-preview-container {
+  display: none;
+  position: relative;
+  background: #f8f9fa;
+  border: 1px solid #e2e5e8;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 4px 0;
+}
+
+.image-preview-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.preview-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-filename {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-image-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.remove-image-btn:hover {
+  background: #c82333;
 }

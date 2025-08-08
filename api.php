@@ -11,20 +11,21 @@ header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 
+$headers = getallheaders();
 
 
 $path = $_GET["path"] ?? null;
-$token = $_GET["token"] ?? null;
+$token = $headers['Authorization'] ?? null;
 $globals["_GET_DATA"] = $path;
 
 
+$username = null;
 if (!isset($token)) {
 	error_log("ERROR 547389478934729837493287649827634 (AUTH)");
-	echo json_encode('Unauthorized');
+	echo json_encode(["code" => 401, "message" => "Unauthorized"]);
 	die();
 } else {
 	$username = $_POST["username"] ?? null;
-
 	if (!$username) {
 		error_log("ERROR 547389478934729837493287649827634");
 		echo json_encode(false);
@@ -33,12 +34,12 @@ if (!isset($token)) {
 
 	$query = "SELECT token from users where `username` = ?";
 	$result = mysql_fetch_array($query, [$username]);
+
 	if (!$result[0] || $result[0] != $token) {
 		error_log("ERROR 547389478934729837493287649827634 (AUTH)");
-		echo json_encode('Unauthorized');
+		echo json_encode(["code" => 401, "message" => "Unauthorized"]);
 		die();
 	}
-	// get username
 
 
 }
@@ -47,14 +48,13 @@ if (!isset($token)) {
 
 switch ($path) {
 
+	case 'get_client_settings':
+		$results = mysql_fetch_array("SELECT * FROM client_settings");
+		echo json_encode($results);
+
+
 	case "get_chats":
-		#region get_chats
-		$username = $_POST["username"] ?? null;
-
-
-
 		$limit = $_POST["limit"] ?? "6";
-
 		$query = "
 				SELECT
 					m.contact_id,
@@ -86,8 +86,6 @@ switch ($path) {
 
 	case "get_msgs":
 		#region get_msgs
-
-		$username = $_POST["username"] ?? null;
 		$contact_id = $_POST["contact_id"] ?? null;
 
 		if (!$username) {
@@ -121,7 +119,6 @@ switch ($path) {
 	case "get_new_msgs":
 		#region get_msgs
 
-		$username = $_POST["username"] ?? null;
 		$contact_id = $_POST["contact_id"] ?? null;
 		$last_id = ((int) $_POST["last_id"]) ?? null;
 
@@ -156,7 +153,6 @@ switch ($path) {
 	case "get_contact_name_by_contact_id":
 		#region get_contact_name_by_contact_id
 
-		$username = $_POST["username"] ?? null;
 		$contact_id = $_POST["contact_id"] ?? null;
 
 		if (!$username) {
@@ -182,7 +178,6 @@ switch ($path) {
 	case "get_profile_pic_by_contact_id":
 		#region get_profile_pic_by_contact_id
 
-		$username = $_POST["username"] ?? null;
 		$contact_id = $_POST["contact_id"] ?? null;
 
 		if (!$username) {
@@ -211,7 +206,6 @@ switch ($path) {
 		$msg = $_POST["msg"] ?? null;
 		$msg_type = $_POST["msg_type"] ?? 'text';
 		$contact_id = $_POST["contact_id"] ?? null;
-		$username = $_POST["username"] ?? null;
 
 		if (!$msg) {
 			error_log("ERROR 34097329087643298674938647892367364647");

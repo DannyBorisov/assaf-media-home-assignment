@@ -27,7 +27,7 @@ switch ($path) {
         }
 
         if ($honeyPot) {
-            error_log("LOGIN ERROR: HoneyPot triggered for user $username");
+            error_log("LOGIN ERROR: BOT alert! honeypot triggered for user $username");
             echo json_encode(false);
             die();
         }
@@ -74,10 +74,40 @@ switch ($path) {
 
 
     case 'verify_otp':
-        $username = $_GET["username"] ?? null;
-        // generate toekn - uuid
+        $username = $_POST["username"] ?? null;
+        $otp = $_POST["otp"] ?? null;
+
+        if (!$username || !$otp) {
+            error_log("VERIFY OTP ERROR: Missing username or otp");
+            echo json_encode(["success" => false, "message" => "Missing username or otp"]);
+            die();
+        }
+
+        $user_otp = mysql_fetch_array("SELECT otp, expires_at FROM otp WHERE username = ? ORDER BY id DESC LIMIT 1", [$username]);
+        if (empty($user_otp)) {
+            error_log("VERIFY OTP ERROR: No OTP found for user $username");
+            echo json_encode(["success" => false, "message" => "OTP not found"]);
+            die();
+        }
+
+        $stored_otp = $user_otp[0]['otp'];
+        $expires_at = strtotime($user_otp[0]['expires_at']);
+
+        if ($otp != $stored_otp) {
+            error_log("VERIFY OTP ERROR: Invalid OTP for user $username");
+            echo json_encode(["success" => false, "message" => "Invalid OTP"]);
+            die();
+        }
+
+        if (time() > $expires_at) {
+            error_log("VERIFY OTP ERROR: OTP expired for user $username");
+            echo json_encode(["success" => false, "message" => "OTP expired"]);
+            die();
+        }
+
         $token = generateUuidV4();
         echo $token;
+
         break;
 
 }

@@ -15,12 +15,26 @@ CREATE TABLE `otp` (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
-CREATE TABLE `users` (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) NOT NULL,
-  username VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-)
+
+CREATE TABLE `clientsettings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `allowSendingMsgs` tinyint(1) DEFAULT 1,
+  `allowConsoleLog` tinyint(1) DEFAULT 1,
+  `showConsoleLogLevelAndAbove` int(11) DEFAULT 0,
+  `showConsoleLogTrace` tinyint(1) DEFAULT 0,
+  `updateChatWithInterval` tinyint(1) DEFAULT 1,
+  `chatUpdateInterval` int(11) DEFAULT 5000,
+  `playIncommingMsgSound` tinyint(1) DEFAULT 1,
+  `incommingMsgSoundUrl` varchar(255) DEFAULT 'https://sounddino.com//mp3/5/single-sound-message-icq-ooh.mp3',
+  `api_full_url` varchar(255) DEFAULT './api.php?path=',
+  `defaultChatsLoadingLimiting` int(11) DEFAULT 6,
+  `defaultMsgsLoadingLimiting` int(11) DEFAULT 6,
+  `defaultProfilePicture` varchar(255) DEFAULT './profile_pics/unknown.jpg',
+  `tokenName` varchar(255) DEFAULT 'Nothing-to-see-here',
+  `popupDefaultOptions` json DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `contacts` (
   `row_id` int(11) NOT NULL,
@@ -28,7 +42,7 @@ CREATE TABLE `contacts` (
   `belongs_to_username` varchar(255) DEFAULT NULL,
   `contact_name` varchar(255) DEFAULT NULL,
   `profile_picture_url` varchar(255) DEFAULT NULL,
-  `creation_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 INSERT INTO `contacts` (`row_id`, `contact_id`, `belongs_to_username`, `contact_name`, `profile_picture_url`, `creation_datetime`) VALUES
@@ -638,26 +652,13 @@ INSERT INTO `messages` (`row_id`, `belongs_to_username`, `msg_datetime`, `contac
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
-  `creation_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `email` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `users` (`id`, `username`, `creation_datetime`) VALUES
-(1, 'assaf', '2025-07-28 17:38:00'),
-(100, 'beng', '2025-07-28 17:38:00'),
-(101, 'daniell', '2025-07-28 17:38:00'),
-(102, 'yonir', '2025-07-28 17:38:00'),
-(103, 'seanp', '2025-07-28 17:38:00'),
-(104, 'danils', '2025-07-28 17:38:00'),
-(105, 'yonatanb', '2025-07-28 17:38:00'),
-(106, 'igalh', '2025-07-28 17:38:00'),
-(107, 'adib', '2025-07-28 17:38:00'),
-(108, 'ronb', '2025-07-28 17:38:00'),
-(109, 'pessia', '2025-07-28 17:38:00'),
-(110, 'mazy', '2025-07-28 17:38:00'),
-(111, 'gotlib', '2025-07-28 17:38:00'),
-(112, 'yarin', '2025-07-28 17:38:00'),
-(113, 'avrahamk', '2025-07-28 17:38:00'),
-(114, 'noams', '2025-07-28 17:38:00');
+INSERT INTO `users` (`id`, `username`,'email', 'token', `created_at`) VALUES
+(1, 'assaf','dannyboris1993@gmail.com', 'shhhh', '2025-07-28 17:38:00'),
 
 ALTER TABLE `config`
   ADD PRIMARY KEY (`id`),

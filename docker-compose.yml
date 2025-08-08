@@ -10,21 +10,30 @@ services:
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
       - BREVO_API_KEY=123123123
+      - MYSQL_DEFAULT_SERVERNAME=db
+      - MYSQL_DEFAULT_USERNAME=root
+      - MYSQL_DEFAULT_DB_NAME=waclonedem_db28072025135752
+      - MYSQL_DEFAULT_DB_PASSWORD=rootpassword
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: hometest
-      MYSQL_USER: phpuser
-      MYSQL_PASSWORD: phppassword
+      MYSQL_DATABASE: waclonedem_db28072025135752
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      timeout: 20s
+      retries: 10
 
 volumes:
   mysql_data:

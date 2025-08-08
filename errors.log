@@ -1,10 +1,16 @@
-[08-Aug-2025 18:59:00 Asia/Jerusalem] 2025-08-08 18:59:00It seems that MYSQL server details, user, password is not set
-[08-Aug-2025 18:59:00 Asia/Jerusalem] [INCLUDE FAILED] [3876239876478392764328765832546] Message: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, bool given | File: /var/www/html/modules/mysql.php | Line: 208 | Module: mysql | Trace: #0 /var/www/html/modules/mysql.php(208): mysqli_query(false, 'SELECT NOW();')
-#1 /var/www/html/modules/mysql.php(297): mysql_query('SELECT NOW();', false)
-#2 /var/www/html/modules/mysql.php(374): mysql_fetch_array('SELECT NOW();')
+[08-Aug-2025 20:24:11 Asia/Jerusalem] DEBUG MySQL Connect: Server=db, User=root, DB=waclonedem_db28072025135752, Pass=EMPTY
+[08-Aug-2025 20:24:11 Asia/Jerusalem] 2025-08-08 20:24:11 - COULD NOT CONNECT MYSQL SERVER WITH db, root,  Access denied for user 'root'@'172.29.0.3' (using password: NO)
+[08-Aug-2025 20:24:11 Asia/Jerusalem] [INCLUDE FAILED] [3876239876478392764328765832546] Message: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, bool given | File: /var/www/html/modules/mysql.php | Line: 210 | Module: mysql | Trace: #0 /var/www/html/modules/mysql.php(210): mysqli_query(false, 'SELECT NOW();')
+#1 /var/www/html/modules/mysql.php(298): mysql_query('SELECT NOW();', false)
+#2 /var/www/html/modules/mysql.php(375): mysql_fetch_array('SELECT NOW();')
 #3 /var/www/html/app_init.php(58): require_once('/var/www/html/m...')
 #4 /var/www/html/app_init.php(133): include_module('mysql')
 #5 /var/www/html/config.php(86): include_all_modules()
-#6 /var/www/html/auth.php(5): require_once('/var/www/html/c...')
+#6 /var/www/html/api.php(6): require_once('/var/www/html/c...')
 #7 {main}
-[08-Aug-2025 18:59:00 Asia/Jerusalem] LOGIN ERROR: No username provided
+[08-Aug-2025 20:24:11 Asia/Jerusalem] 
+			[2025-08-08 20:24:11]
+			UNCAUGHT EXCEPTION: Call to a member function prepare() on bool
+			in /var/www/html/modules/mysql.php
+			on line 152
+

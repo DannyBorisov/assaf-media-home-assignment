@@ -1,32 +1,4 @@
-$.settings = {
-  allowSendingMsgs: true,
-
-  allowConsoleLog: true,
-  showConsoleLogLevelAndAbove: 0,
-  showConsoleLogTrace: false,
-
-  updateChatWithInterval: true,
-  chatUpdateInterval: 5 * 1000,
-
-  playIncommingMsgSound: true,
-  incommingMsgSoundUrl:
-    "https://sounddino.com//mp3/5/single-sound-message-icq-ooh.mp3",
-  api_full_url: "./api.php?path=",
-  defaultChatsLoadingLimiting: 6,
-  defaultMsgsLoadingLimiting: 6,
-  defaultProfilePicture: "./profile_pics/unknown.jpg",
-
-  popupDefaultOptions: {
-    animation: "none",
-    title: false,
-    content: false,
-    theme: "supervan",
-    columnClass: "col-md-12",
-    backgroundDismiss: true,
-    closeIcon: false,
-    draggable: true,
-  },
-};
+$.settings = {};
 
 $.globals = {
   username: "assaf",
@@ -128,10 +100,15 @@ var postToServer = async function ($arguments = null) {
   var onAnywayCallback = $arguments?.onAnywayCallback ?? null;
   var asyncValue = $arguments?.async ?? true;
 
+  const TokenName = "Nothing-to-see-here";
+
   $.ajax({
     url: url,
     method: method,
     data: postObj,
+    headers: {
+      Authorization: localStorage.getItem(TokenName),
+    },
     async: asyncValue,
     error: function (data) {
       if (typeof errorCallback === "function") {
@@ -412,6 +389,14 @@ var loadMsgsFromServerByContactId = async function (
   });
 };
 
+var getClientSettings = async function () {
+  var $route = "get_client_settings";
+  postToServer({
+    route: $route,
+    $data: { username: $username },
+  });
+};
+
 var getChats = async function (
   $append = false,
   $limit = null,
@@ -435,6 +420,7 @@ var getChats = async function (
       limit: $limit,
     },
     successCallback: function (data) {
+      console.log({ data });
       $chats = data;
       consoleLog("chats", $chats, { level: 0 });
       var $i = 0;
@@ -539,8 +525,8 @@ function canUserSendMessage($messageContent, $username, $contact) {
     return false;
   }
 
-  if (!$content) {
-    consoleLog("No content ", $messageContent, {
+  if (!$messageContent) {
+    consoleLog("No messageContent ", {
       level: 5,
       type: "error",
     });
@@ -938,8 +924,16 @@ $(window).on("load", function () {
   $("body").on("submit", "#send_msg", function (e) {
     e.preventDefault();
     var $msg = $("#send_msg #msg").val();
+
     if (!$(this).hasClass("disabled")) {
-      sendMessage($msg);
+      // Check if there's a pending image to send
+      if (pendingImage) {
+        sendMessage(pendingImage.base64, "image");
+        clearImagePreview();
+      } else if ($msg.trim()) {
+        // Send text message if there's text content
+        sendMessage($msg);
+      }
     }
   });
 
@@ -954,23 +948,149 @@ $(window).on("load", function () {
       return;
     }
     const imageFile = files[0];
-    // Check if the selected file is an image
     if (!imageFile.type.startsWith("image/")) {
       consoleLog("Selected file is not an image", { level: 0 });
       return;
     }
     handleImageUpload(imageFile);
   });
+
+  // Initialize image upload with delay to ensure DOM is ready
+  setTimeout(() => {
+    initImageUpload();
+  }, 100);
 });
+
+function isMobile() {
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) || window.innerWidth <= 768
+  );
+}
+
+function initImageUpload() {
+  const imageInput = document.getElementById("image-upload");
+  const messageContainer = document.querySelector(".message-input-container");
+
+  if (isMobile()) {
+    if (imageInput) {
+      imageInput.setAttribute("capture", "environment");
+      imageInput.setAttribute("accept", "image/*");
+    }
+  } else {
+    // Desktop: Enable drag and drop on the message container
+    if (messageContainer) {
+      setupDragAndDrop(messageContainer);
+    }
+    if (imageInput) {
+      imageInput.setAttribute("accept", "image/*");
+    }
+  }
+}
+
+function setupDragAndDrop(dropZone) {
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+
+  ["dragenter", "dragover"].forEach((eventName) => {
+    dropZone.addEventListener(
+      eventName,
+      () => dropZone.classList.add("drag-over"),
+      false
+    );
+  });
+
+  ["dragleave", "drop"].forEach((eventName) => {
+    dropZone.addEventListener(
+      eventName,
+      () => dropZone.classList.remove("drag-over"),
+      false
+    );
+  });
+
+  dropZone.addEventListener("drop", handleDrop, false);
+}
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function handleDrop(e) {
+  const files = e.dataTransfer.files;
+
+  if (files.length > 0) {
+    const imageFile = files[0];
+    if (imageFile.type.startsWith("image/")) {
+      handleImageUpload(imageFile);
+    }
+  }
+}
+
+let pendingImage = null;
 
 function handleImageUpload(imageFile) {
   const reader = new FileReader();
   reader.onload = function (event) {
     const base64 = event.target.result;
-    sendMessage(base64, "image");
+
+    pendingImage = {
+      file: imageFile,
+      base64: base64,
+      name: imageFile.name,
+      size: imageFile.size,
+    };
+
+    showImagePreview(base64, imageFile.name);
   };
   reader.onerror = function (error) {
     consoleLog("Error reading image file:", error, { level: 5, type: "error" });
   };
   reader.readAsDataURL(imageFile);
+}
+
+function showImagePreview(base64, filename) {
+  const messageInput = document.getElementById("msg");
+  const messageContainer = document.querySelector(".message-input-container");
+
+  // Create preview element if it doesn't exist
+  let preview = document.getElementById("image-preview");
+  if (!preview) {
+    preview = document.createElement("div");
+    preview.id = "image-preview";
+    preview.className = "image-preview-container";
+    messageContainer.appendChild(preview);
+  }
+
+  // Update preview content
+  preview.innerHTML = `
+    <div class="image-preview-content">
+      <img src="${base64}" alt="${filename}" class="preview-image">
+      <div class="preview-info">
+        <span class="preview-filename">${filename}</span>
+        <button class="remove-image-btn" onclick="clearImagePreview()" type="button">×</button>
+      </div>
+    </div>
+  `;
+
+  // Hide the text input and show preview
+  messageInput.style.display = "none";
+  messageInput.removeAttribute("required"); // Remove required while hidden
+  preview.style.display = "block";
+}
+
+function clearImagePreview() {
+  const messageInput = document.getElementById("msg");
+  const preview = document.getElementById("image-preview");
+
+  pendingImage = null;
+
+  if (preview) {
+    preview.style.display = "none";
+  }
+  messageInput.style.display = "block";
+  messageInput.setAttribute("required", ""); // Restore required attribute
 }

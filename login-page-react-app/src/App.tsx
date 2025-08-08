@@ -13,23 +13,22 @@ function App() {
   const [username, setUsername] = useState<string>("");
   const [honeyPot, setHoneyPot] = useState<string>("");
   const [userOTP, setUserOTP] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const { handleLogin, isLoading, handleOTPVerification } = useLogin();
 
   function onClick() {
     if (currentStep === Steps.Login) {
-      setCurrentStep(Steps.OTP);
+      handleLogin(username, honeyPot)
+        .then(() => setCurrentStep(Steps.OTP))
+        .catch((err) => {
+          setError(err);
+          setTimeout(() => {
+            setError("");
+          }, 1000);
+        });
     } else {
       handleOTPVerification(username, honeyPot);
-    }
-  }
-
-  function onChange(value: string) {
-    if (currentStep === Steps.Login) {
-      setUsername(value);
-    }
-    if (currentStep === Steps.OTP) {
-      setUserOTP(value);
     }
   }
 
@@ -38,7 +37,6 @@ function App() {
       handleOTPVerification(username, userOTP).then((token) =>
         localStorage.setItem(TokenName, token)
       );
-      return;
     } else {
       handleLogin(username).then(() => setCurrentStep(Steps.OTP));
     }
@@ -51,7 +49,7 @@ function App() {
           <h1 className={styles.title}>Welcome Back</h1>
           <p className={styles.subtitle}>Sign in to your account to continue</p>
         </div>
-
+        {error && <p className={styles.errorMessage}>{error}</p>}
         <form
           className={styles.form}
           onSubmit={async (e) => {
@@ -61,18 +59,32 @@ function App() {
         >
           <div className={styles.inputGroup}>
             <label className={styles.label} htmlFor="username">
-              Username
+              {currentStep === Steps.OTP ? "Enter OTP" : "Username"}
             </label>
-            <input
-              id="username"
-              className={styles.input}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder="Enter your username"
-              type="text"
-              disabled={isLoading}
-              value={username}
-              required
-            />
+            {currentStep === Steps.Login && (
+              <input
+                id="username"
+                className={styles.input}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                type="text"
+                disabled={isLoading}
+                value={username}
+                required
+              />
+            )}
+            {currentStep === Steps.OTP && (
+              <input
+                id="otp"
+                className={styles.input}
+                onChange={(e) => setUserOTP(e.target.value)}
+                placeholder="Enter OTP"
+                type="text"
+                disabled={isLoading}
+                value={userOTP}
+                required
+              />
+            )}
           </div>
 
           <input
@@ -85,7 +97,11 @@ function App() {
             onChange={(e) => setHoneyPot(e.target.value)}
           />
 
-          <LoginButton onClick={onClick} isLoading={isLoading} />
+          <LoginButton
+            onClick={onClick}
+            isLoading={isLoading}
+            text={currentStep === Steps.Login ? "Login" : "Submit"}
+          />
         </form>
       </div>
     </div>
@@ -97,9 +113,14 @@ export default App;
 interface LoginButtonProps {
   isLoading: boolean;
   onClick: () => void;
+  text: string;
 }
 
-const LoginButton: React.FC<LoginButtonProps> = ({ isLoading, onClick }) => {
+const LoginButton: React.FC<LoginButtonProps> = ({
+  isLoading,
+  onClick,
+  text,
+}) => {
   function renderText() {
     if (isLoading) {
       return (
@@ -109,7 +130,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ isLoading, onClick }) => {
         </>
       );
     }
-    return "Login";
+    return text;
   }
 
   return (
