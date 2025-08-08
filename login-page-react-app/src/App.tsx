@@ -85,7 +85,7 @@ function App() {
 
           <input
             type="text"
-            style={{ display: "none" }}
+            style={{ position: "absolute", left: "-9999px" }}
             tabIndex={-1}
             autoComplete="off"
             name="email_confirm"
